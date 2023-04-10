@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@800&display=swap');
+:root {
+  --primary-color: white;
+  --secondary-color: black;
+}
+
+.darkMode {
+  --primary-color: #222;
+  --secondary-color: white;
+}
+
+body {
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+header {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 70px;
+  text-align: center;
+  border: 120px;
+}
+
+.github {
+  margin: 3% 22% 5% 22%;
+  text-align: justify;
+  font-size: 18px;
+}
+
+.talk {
+  margin: 3% 22% 1% 22%;
+  border: 120px;
+  text-align: justify;
+}
+
+.talk2 {
+  margin: 3% 22% 1% 22%;
+  border: 120px;
+  text-align: justify;
+}
+
+.option {
+  padding: 50px 0px;
+  color: white;
+}
+section {
+  font-weight: bold;
+  font-size: 25px;
+}
+
+button {
+  text-align: left;
+  border-radius: 50px;
+  border: 1px solid #000;
+  padding: 10px 20px;
+  font-size: 5px;
+  cursor: pointer;
+}
+
+.grid-item {
+  padding: 25px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.dev {
+  width: 250px;
+  height: 62px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 20px;
+  border: none;
+  color: #fff;
+  background: #563cf5;
+  cursor: pointer;
+  border-radius: 50px;
+  text-align: center;
+}
+
+.lang {
+  width: 350px;
+  height: 62px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 20px;
+  border: none;
+  color: #fff;
+  background: #3a3a3f;
+  cursor: pointer;
+  border-radius: 25px;
+  text-align: center;
+}
+#log{
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 25;
+  font-weight: bold;
+}
