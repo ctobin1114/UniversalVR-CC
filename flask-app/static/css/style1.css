@@ -1,14 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@800&display=swap');
 :root {
+  --primary-color: black;
+  --secondary-color: white;
+}
+.verseNew {
+  transform: scale(1.25);
+  box-sizing: border-box;
+  font-weight: bold;
+  color: transparent;
+  line-height: 1.5rem;
+  padding-bottom: 1rem;
+  transform-origin: left top;
+  text-shadow: 0 0 0 var(--secondary-color);
+  ;
+}
+
+.verse{
+  box-sizing: border-box;
+  font-weight: bold;
+  color: transparent;
+  line-height: 1.5rem;
+  padding-bottom: 1rem;
+  transform-origin: left top;
+  text-shadow: 0 0 0 var(--secondary-color);
+  opacity: 0.6;
+}
+.Texts{
+    box-sizing: border-box;
+    list-style-type: none;
+    padding: 20px;
+    padding-right: 25%;
+    margin: 0;
+}
+.darkMode {
   --primary-color: white;
   --secondary-color: black;
 }
 
-.darkMode {
-  --primary-color: #222;
-  --secondary-color: white;
+.TextWrapper{
+  scroll-behavior: smooth;
+  width: 1000px;
+  height: 500px;
+  position: relative;
+  overflow: hidden auto;
 }
-
 body {
   background-color: var(--primary-color);
   color: var(--secondary-color);
