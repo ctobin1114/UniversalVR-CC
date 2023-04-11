@@ -12,7 +12,7 @@
   padding-bottom: 1rem;
   transform-origin: left top;
   text-shadow: 0 0 0 var(--secondary-color);
-  ;
+  
 }
 
 .verse{
@@ -24,6 +24,12 @@
   transform-origin: left top;
   text-shadow: 0 0 0 var(--secondary-color);
   opacity: 0.6;
+}
+li:hover{
+  transform: scale(1.25);
+  -webkit-transition: transform .2s ease-in-out;
+
+
 }
 .Texts{
     box-sizing: border-box;
