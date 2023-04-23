@@ -3,121 +3,197 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>ZAZA</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style1.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <title>Vr Universal Captioning</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style1.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;1,400;1,500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v6.3.0/css/all.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"
+      integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
+      crossorigin="anonymous"
+    ></script>
     <script type="text/javascript" charset="utf-8">
-      var bool = false;
-  function PlayOrPause() // no ';' here
-{
-  console.log("Yeety")
-  var button = document.getElementById("playorpause");
-  console.log(button.value)
-    if (button.innerText=="Play"){
-      button.innerText = "Pause";
-      bool = true;
-    } else 
-    { 
-    button.innerText = "Play";
-    bool = false;
-    }
+      var bool = false
+      function PlayOrPause() {
+        // no ';' here
+        console.log('Yeety')
+        var button = document.getElementById('playorpause')
+        console.log(button.value)
+        if (button.innerText == 'Play') {
+          button.innerText = 'Pause'
+          bool = true
+        } else {
+          button.innerText = 'Play'
+          bool = false
+        }
+      }
 
-}
+      $(document).ready(function() {
+        const BLUR_LEVELS = 4
+        const MAX_BLUR = 2
+        const VERSE_INTERVAL = 2000
 
-        $(document).ready(function() {
+        var lyrics = document.getElementById('ul')
+        var lyricsWrapper = document.getElementById('log')
+        let currentVerseIdx = null
 
-         
+        function scrollLyricsToVerse(verse) {
+          const scrollOffset = Math.floor(lyricsWrapper.clientHeight * 0.2)
+          const versePosition = verse.offsetTop - scrollOffset
 
-const BLUR_LEVELS = 4;
-const MAX_BLUR = 2;
-const VERSE_INTERVAL = 2000;
+          lyricsWrapper.scrollTop = versePosition
+        }
 
-var lyrics = document.getElementById('ul');
-var lyricsWrapper = document.getElementById('log');
-let currentVerseIdx = null;
+        function setVerse(verseIdx) {
+          console.log('setVerse activated')
+          const currentVerse = lyrics.children[currentVerseIdx]
+          const newVerse = lyrics.children[verseIdx]
+          if (currentVerse) {
+            console.log('here')
+            currentVerse.classList.remove('verseNew')
+            currentVerse.classList.add('verse')
+          }
+          if (newVerse) {
+            scrollLyricsToVerse(newVerse)
+          }
 
-function scrollLyricsToVerse(verse) {
-  const scrollOffset = Math.floor(lyricsWrapper.clientHeight * 0.2);
-  const versePosition = verse.offsetTop - scrollOffset;
+          currentVerseIdx = verseIdx
+        }
 
-  lyricsWrapper.scrollTop = versePosition;
-}
+        function incrementVerse(amount, data) {
+          const newVerseIdx = Math.max(
+            0,
+            (currentVerseIdx + amount) % lyrics.children.length
+          )
+          setVerse(newVerseIdx)
+        }
 
-function setVerse(verseIdx) {
-  console.log("setVerse activated")
-  const currentVerse = lyrics.children[currentVerseIdx];
-  const newVerse = lyrics.children[verseIdx];
-  if (currentVerse) {
-    console.log("here")
-    currentVerse.classList.remove('verseNew');
-    currentVerse.classList.add('verse');
-  }
-  if (newVerse) {
-    scrollLyricsToVerse(newVerse);
-  }
-  
-  
-  currentVerseIdx = verseIdx;
-}
+        setVerse(0)
 
-function incrementVerse(amount,data) {
-  const newVerseIdx = Math.max(0, (currentVerseIdx + amount) % lyrics.children.length);
-  setVerse(newVerseIdx);
-}
+        var socket = io()
 
-setVerse(0);
+        socket.on('my_response', function(msg, cb) {
+          if (msg.data != '') {
+            var ul = document.getElementById('ul')
+            var li = document.createElement('li')
+            li.classList.add('verseNew')
 
-            var socket = io();
-
-          
-            socket.on('my_response', function(msg, cb) {
-             if(msg.data != ''){ 
-              var ul = document.getElementById("ul");
-  var li = document.createElement("li");
-  li.classList.add("verseNew")
-
-  li.appendChild(document.createTextNode(msg.data));
-  li.setAttribute("id", "text"); // added line
-if(bool){
-  ul.appendChild(li);
-  incrementVerse(1,msg.data);
-}
-}
-                if (cb)
-                    cb();
-            });
-          
-
-
-  
-        });
-
+            li.appendChild(document.createTextNode(msg.data))
+            li.setAttribute('id', 'text') // added line
+            if (bool) {
+              ul.appendChild(li)
+              incrementVerse(1, msg.data)
+            }
+          }
+          if (cb) cb()
+        })
+      })
     </script>
   </head>
   <body>
-    <button id="toggleButton"></button>
+    <!-- <button id="toggleButton"></button> -->
+    <!--aside bar-->
+    <nav class="navbar">
+      <div class="navbar-container">
+        <!--logo div-->
+        <div class="navbar-logo-div">
+          <a class="navbar-logo-link" href="#">
+            <i class="fas fa-shield-dog"></i>
+          </a>
+          <button class="navbar-toggler">
+            <i class="fas fa-solid fa-bars"></i>
+          </button>
+        </div>
+
+        <!--item list-->
+        <ul class="menu-list" class="dropdown">
+          <li class="menu-item">
+            <a class="menu-link" href="#">
+              <i class="fas fa-solid fa-table"></i>
+              <span class="menu-link-text">Font Size</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">
+              <i class="fas fa-solid fa-paw"></i>
+              <span class="menu-link-text">Font Color</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" class="menu-link" href="#">
+              <i class="fas fa-solid fa-user"></i>
+              <span class="menu-link-text">Font Style</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">
+              <i class="fas fa-regular fa-stethoscope"></i>
+              <span class="menu-link-text">Letter Spacing</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="#">
+              <i class="fas fa-duotone fa-gear"></i>
+              <span class="menu-link-text">Settings</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="onoffswitch">
+      <input
+        type="checkbox"
+        name="onoffswitch"
+        id="toggleButton"
+        class="onoffswitch-checkbox"
+        checked
+      />
+      <label class="onoffswitch-label" for="myonoffswitch">
+        <span class="onoffswitch-inner"></span>
+        <span class="onoffswitch-switch"></span>
+      </label>
+    </div>
     <div class="gitub">
-        <header>Vr Universal Captioning</header>
-        
+      <header>Vr Universal Captioning</header>
     </div>
 
     <div class="talk2">
-      
       <div id="log" class="TextWrapper">
-        <ul id="ul" class = "Texts">
-        </ul>
+        <ul id="ul" class="Texts"></ul>
       </div>
     </div>
 
     <div class="option">
       <div class="grid-item">
-        <button id="playorpause" class="dev" value="Play" onclick="PlayOrPause()">Play</button>
+        <button
+          id="playorpause"
+          class="dev"
+          value="Play"
+          onclick="PlayOrPause()"
+        >
+          Play
+        </button>
         <select class="dev" name="Transcribe Speed" id="cars">
-          <option value=3>Normal</option>
-          <option value=6>Slow</option>
-          <option value=2>Fast</option>
-          <option value=1>Extremely Fast</option>
+          <option value="3">Normal</option>
+          <option value="6">Slow</option>
+          <option value="2">Fast</option>
+          <option value="1">Extremely Fast</option>
         </select>
       </div>
       <!-- <section class="grid-item">
@@ -125,13 +201,21 @@ if(bool){
         </section> -->
     </div>
 
-   
-    
     <script>
       let btn = document.getElementById('toggleButton')
       btn.onclick = () => {
         document.body.classList.toggle('darkMode')
       }
+    </script>
+
+    <script>
+      const btnToggler = window.document.querySelector('.navbar-toggler')
+      const navbar = window.document.querySelector('.navbar')
+
+      //events
+      btnToggler.addEventListener('click', () => {
+        navbar.classList.toggle('active')
+      })
     </script>
   </body>
 </html>
