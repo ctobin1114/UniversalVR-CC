@@ -92,8 +92,51 @@
           if (msg.data != '') {
             var ul = document.getElementById('ul')
             var li = document.createElement('li')
-            li.classList.add('verseNew')
+           
 
+            var font = document.getElementById("fontChange");
+            var vFont = font.value;
+
+            var spacing = document.getElementById("spacingChange");
+            var vSpacing = spacing.value;
+            
+            if(vFont == 20){
+              li.style.fontSize = (20) + 'px';
+            }
+            if(vFont == 30){
+              li.style.fontSize = (30) + 'px';
+            }
+            if(vFont == 40){
+              li.style.fontSize = (40) + 'px';
+            }
+            if(vSpacing == 0){
+              li.style.letterSpacing = (0) + 'px';
+            }
+            if(vSpacing == 2){
+              li.style.letterSpacing = (2) + 'px';
+            }
+            if(vSpacing== 4){
+              li.style.letterSpacing = (4) + 'px';
+            }
+            if(vSpacing == 6){
+              li.style.letterSpacing = (6) + 'px';
+            }
+
+            var fontStyle = document.getElementById("fontChange");
+            var vFontStyle = fontStyle.value;
+            
+            if(vFontStyle == 'Arial'){
+              li.style.fontStyle = 'Arial';
+            }
+            if(vFontStyle == 'Fantasy'){
+              li.style.fontStyle = 'Fantasy';
+            }
+            if(vFontStyle== 'Georgia'){
+              li.style.fontStyle = 'Georgia';
+            }
+            
+           
+            li.classList.add('verseNew')
             li.appendChild(document.createTextNode(msg.data))
             li.setAttribute('id', 'text') // added line
             if (bool) {
@@ -104,6 +147,43 @@
           if (cb) cb()
         })
       })
+
+
+  function ChangeFontSize(e) {
+    var e = document.getElementById("fontChange");
+    var value = e.value;
+
+    var selectLi = document.querySelectorAll("li") 
+    for (var i =0; i < selectLi.length; i++){
+        selectLi[i].style.fontSize= (value) + 'px';
+    }
+  }
+
+
+    function ChangeFontStyle(e) {
+      console.log("CHANGE STYLE")
+    var e = document.getElementById("styleChange");
+    var value = e.value;
+      console.log(value)
+    var selectLi = document.querySelectorAll("li") 
+    for (var i =0; i < selectLi.length; i++){
+      if(value = "Arial"){
+        selectLi[i].style.font= "Arial, Helvetica, sans-serif";
+      }
+        
+    }
+  }
+    function ChangeLetterSpacing(e) {
+    var e = document.getElementById("spacingChange");
+    var value = e.value;
+
+    var selectLi = document.querySelectorAll("li") 
+    for (var i =0; i < selectLi.length; i++){
+        selectLi[i].style.letterSpacing= (value) + 'px';
+    }
+
+}
+
     </script>
   </head>
   <body>
@@ -113,7 +193,9 @@
       <div class="navbar-container">
         <!--logo div-->
         <div class="navbar-logo-div">
-          <a class="navbar-logo-link" href="#"> </a>
+          <a class="navbar-logo-link" href="#">
+            <i class="fas fa-shield-dog"></i>
+          </a>
           <button class="navbar-toggler">
             <i class="fas fa-solid fa-bars"></i>
           </button>
@@ -124,42 +206,42 @@
           <li class="menu-item">
             <a class="menu-link" href="#">
               <i class="fas fa-solid fa-table"></i>
-              <span class="menu-link-text">Font Size</span>
+              <select class="dev" name="Transcribe Speed" id="fontChange" onchange = "ChangeFontSize()">
+                <option selected disabled hidden>Font Size</option>
+                <option value="20">Small</option>
+                <option value="30">Medium</option>
+                <option value="40">Large</option>
+
+              </select>
             </a>
-            <ul class="dropdown">
-              <li><a href="#">24</a></li>
-              <li><a href="#">48</a></li>
-            </ul>
           </li>
-          <li class="menu-item">
-            <a class="menu-link" href="#">
-              <i class="fas fa-solid fa-paintbrush"></i>
-              <span class="menu-link-text">Font Color</span>
-            </a>
-            <ul class="dropdown">
-              <li><a href="#">Orange</a></li>
-              <li><a href="#">Purple</a></li>
-            </ul>
-          </li>
+          
           <li class="menu-item">
             <a class="menu-link" class="menu-link" href="#">
-              <i class="fas fa-solid fa-font"></i>
-              <span class="menu-link-text">Font Style</span>
+              <i class="fas fa-solid fa-user"></i>
+              <select class="dev" id="styleChange" onchange = "ChangeFontStyle()">
+                <option selected disabled hidden>Font Style</option>
+                <option value="Arial">Arial</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Fantasy">Fantasy</option>
+
+              </select>
             </a>
-            <ul class="dropdown">
-              <li><a href="#">Time Roman</a></li>
-              <li><a href="#">Arial</a></li>
-            </ul>
           </li>
           <li class="menu-item">
             <a class="menu-link" href="#">
-              <i class="fas fa-regular fa-arrows-left-right"></i>
-              <span class="menu-link-text">Letter Spacing</span>
+              <i class="fas fa-regular fa-stethoscope"></i>
+              <select class="dev" id="spacingChange" onchange = "ChangeLetterSpacing()">
+                <option selected disabled hidden>Letter Spacing</option>
+                <option value="0">Normal</option>
+                <option value="2">Small</option>
+                <option value="4">Medium</option>
+                <option value="6">Large</option>
+
+              </select>
             </a>
-            <ul class="dropdown">
-              <li><a href="#">2x</a></li>
-            </ul>
           </li>
+          
         </ul>
       </div>
     </nav>
