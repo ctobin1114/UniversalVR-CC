@@ -281,14 +281,6 @@ li {
   margin-bottom: 1.2rem;
 }
 
-#icon-search {
-  position: absolute;
-  color: var(--green);
-  font-size: 1.2rem;
-  top: 4.5rem;
-  left: 1.4rem;
-}
-
 .navbar .navbar-search::placeholder {
   visibility: hidden;
   opacity: 0;
@@ -373,23 +365,6 @@ li {
   display: block;
 }
 
-/*navbar.active search input*/
-.navbar.active .navbar-search {
-  background-position: 1rem 0.7rem;
-  padding: 1rem;
-  padding-left: 3rem;
-}
-
-.navbar.active #icon-search {
-  top: 5.1rem;
-  left: 1.6rem;
-}
-
-.navbar.active .navbar-search::placeholder {
-  visibility: visible;
-  opacity: 1;
-}
-
 /*navbar.active menu*/
 .navbar.active .menu-list {
   padding-left: 1rem;
@@ -445,12 +420,6 @@ li {
     width: 100%;
   }
 
-  .navbar .navbar-search {
-    position: absolute;
-    border-radius: 0;
-    left: 0;
-  }
-
   .navbar .menu-item {
     position: relative;
     top: 4rem;
@@ -480,4 +449,52 @@ li {
 
 .dropdown:hover .dropdown-content {
   display: block;
+}
+
+li {
+  color: #fff;
+  display: block;
+  float: left;
+  padding: 1rem;
+  position: relative;
+  text-decoration: none;
+  transition-duration: 0.5s;
+}
+
+li a {
+  color: #fff;
+}
+
+li:hover,
+li:focus-within {
+  cursor: pointer;
+}
+
+li:focus-within a {
+  outline: none;
+}
+
+ul li ul {
+  visibility: hidden;
+  opacity: 0;
+  min-width: 1rem;
+  position: absolute;
+  transition: all 0.5s ease;
+  margin-top: 5px;
+  left: 0;
+  display: none;
+}
+
+ul li:hover > ul,
+ul li:focus-within > ul,
+ul li ul:hover,
+ul li ul:focus {
+  visibility: visible;
+  opacity: 1;
+  display: block;
+}
+
+ul li ul li {
+  clear: both;
+  width: 100%;
 }
