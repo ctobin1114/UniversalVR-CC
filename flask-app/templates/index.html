@@ -28,135 +28,137 @@
       integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ=="
       crossorigin="anonymous"
     ></script>
-    <script type="text/javascript" charset="utf-8">
-      var bool = false
-      function PlayOrPause() {
-        var button = document.getElementById('playorpause')
-        if (button.innerText == 'Play') {
-          button.innerText = 'Pause'
-          bool = true
-        } else {
-          button.innerText = 'Play'
-          bool = false
-        }
+
+    
+<script type="text/javascript" charset="utf-8">
+  var bool = false
+  function PlayOrPause() {
+    var button = document.getElementById('playorpause')
+    if (button.innerText == 'Play') {
+      button.innerText = 'Pause'
+      bool = true
+    } else {
+      button.innerText = 'Play'
+      bool = false
+    }
+  }
+
+  $(document).ready(function() {
+
+    var transcription = document.getElementById('ul')
+    var transcriptionContainer = document.getElementById('log')
+    let oldTranscriptionIndex = null
+    setTranscription(0)
+
+
+    function setTranscription(transcriptionIndex) {
+      const oldTranscription = transcription.children[oldTranscriptionIndex]
+      const newTranscription = transcription.children[transcriptionIndex]
+      if (oldTranscription) {
+        oldTranscription.classList.remove('transcriptionNew')
+        oldTranscription.classList.add('transcription')
+      }
+      if (newTranscription) {
+        scroll(newTranscription)
       }
 
-      $(document).ready(function() {
-        
-        var transcription = document.getElementById('ul')
-        var transcriptionContainer = document.getElementById('log')
-        let oldTranscriptionIndex = null
-        setTranscription(0)
-        
+      oldTranscriptionIndex = transcriptionIndex
+    }
 
-        function setTranscription(transcriptionIndex) {
-          const oldTranscription = transcription.children[oldTranscriptionIndex]
-          const newTranscription = transcription.children[transcriptionIndex]
-          if (oldTranscription) {
-            oldTranscription.classList.remove('transcriptionNew')
-            oldTranscription.classList.add('transcription')
-          }
-          if (newTranscription) {
-            scroll(newTranscription)
-          }
+    function nextTranscription(amount) {
+      const newTranscriptionIdx = Math.max(
+        0,
+        (oldTranscriptionIndex + amount) % transcription.children.length
+      )
+      setTranscription(newTranscriptionIdx)
+    }
 
-          oldTranscriptionIndex = transcriptionIndex
+    function scroll(transcription) {
+      const scrollOffset = Math.floor(transcriptionContainer.clientHeight * 0.2)
+      const transcriptionPosition = transcription.offsetTop - scrollOffset
+
+      transcriptionContainer.scrollTop = transcriptionPosition
+    }
+
+
+
+    var socket = io()
+
+    socket.on('my_response', function(msg, cb) {
+      if (msg.data != '') {
+        var ul = document.getElementById('ul')
+        var li = document.createElement('li')
+
+
+        var font = document.getElementById("fontChange");
+        var vFont = font.value;
+
+        var spacing = document.getElementById("spacingChange");
+        var vSpacing = spacing.value;
+          
+        var style= document.getElementById("styleChange");
+        var vStyle= style.value;
+        if(vFont == 20){
+          li.style.fontSize = (20) + 'px';
+        }
+        if(vFont == 30){
+          li.style.fontSize = (30) + 'px';
+        }
+        if(vFont == 40){
+          li.style.fontSize = (40) + 'px';
+        }
+        if(vSpacing == 0){
+          li.style.letterSpacing = (0) + 'px';
+        }
+        if(vSpacing == 2){
+          li.style.letterSpacing = (2) + 'px';
+        }
+        if(vSpacing== 4){
+          li.style.letterSpacing = (4) + 'px';
+        }
+        if(vSpacing == 6){
+          li.style.letterSpacing = (6) + 'px';
         }
 
-        function nextTranscription(amount) {
-          const newTranscriptionIdx = Math.max(
-            0,
-            (oldTranscriptionIndex + amount) % transcription.children.length
-          )
-          setTranscription(newTranscriptionIdx)
+
+        if(vStyle== "Arial"){
+          li.style.fontFamily = "Arial, Helvetica, sans-serif";
+        }
+        if(vStyle== "Georgia"){
+          li.style.fontFamily = "Georgia, Helvetica, sans-serif";
+        }
+        if(vStyle== "Lucida"){
+          li.style.fontFamily = "Lucida Console, monospace";
+        } 
+        if(vStyle== "Default"){
+          li.style.fontFamily = "Nunito Sans, sans-serif";
+        } 
+
+        var fontStyle = document.getElementById("fontChange");
+        var vFontStyle = fontStyle.value;
+
+        if(vFontStyle == 'Arial'){
+          li.style.fontStyle = "Arial, Helvetica, sans-serif";
+        }
+        if(vFontStyle == 'Lucida'){
+          li.style.fontStyle = 'Fantasy';
+        }
+        if(vFontStyle== 'Georgia'){
+          li.style.fontStyle = 'Georgia';
         }
 
-        function scroll(transcription) {
-          const scrollOffset = Math.floor(transcriptionContainer.clientHeight * 0.2)
-          const transcriptionPosition = transcription.offsetTop - scrollOffset
 
-          transcriptionContainer.scrollTop = transcriptionPosition
+        li.classList.add('verseNew')
+        li.appendChild(document.createTextNode(msg.data))
+        li.setAttribute('id', 'text') // added line
+        if (bool) {
+          ul.appendChild(li)
+          nextTranscription(1, msg.data)
         }
-
-        
-
-        var socket = io()
-
-        socket.on('my_response', function(msg, cb) {
-          if (msg.data != '') {
-            var ul = document.getElementById('ul')
-            var li = document.createElement('li')
-           
-
-            var font = document.getElementById("fontChange");
-            var vFont = font.value;
-
-            var spacing = document.getElementById("spacingChange");
-            var vSpacing = spacing.value;
-             
-            var style= document.getElementById("styleChange");
-            var vStyle= style.value;
-            if(vFont == 20){
-              li.style.fontSize = (20) + 'px';
-            }
-            if(vFont == 30){
-              li.style.fontSize = (30) + 'px';
-            }
-            if(vFont == 40){
-              li.style.fontSize = (40) + 'px';
-            }
-            if(vSpacing == 0){
-              li.style.letterSpacing = (0) + 'px';
-            }
-            if(vSpacing == 2){
-              li.style.letterSpacing = (2) + 'px';
-            }
-            if(vSpacing== 4){
-              li.style.letterSpacing = (4) + 'px';
-            }
-            if(vSpacing == 6){
-              li.style.letterSpacing = (6) + 'px';
-            }
-
-
-            if(vStyle== "Arial"){
-        li.style.fontFamily = "Arial, Helvetica, sans-serif";
       }
-      if(vStyle== "Georgia"){
-        li.style.fontFamily = "Georgia, Helvetica, sans-serif";
-      }
-      if(vStyle== "Lucida"){
-        li.style.fontFamily = "Lucida Consol, Helvetica, monospace";
-      } 
-      if(vStyle== "Default"){
-        li.style.fontFamily = "Nunito Sans', sans-serif";
-      } 
-
-            var fontStyle = document.getElementById("fontChange");
-            var vFontStyle = fontStyle.value;
-            
-            if(vFontStyle == 'Arial'){
-              li.style.fontStyle = "Arial, Helvetica, sans-serif";
-            }
-            if(vFontStyle == 'Lucida'){
-              li.style.fontStyle = 'Fantasy';
-            }
-            if(vFontStyle== 'Georgia'){
-              li.style.fontStyle = 'Georgia';
-            }
-            
-           
-            li.classList.add('verseNew')
-            li.appendChild(document.createTextNode(msg.data))
-            li.setAttribute('id', 'text') // added line
-            if (bool) {
-              ul.appendChild(li)
-              nextTranscription(1, msg.data)
-            }
-          }
-          if (cb) cb()
-        })
-      })
+      if (cb) cb()
+    })
+  })
 
 
   function ChangeFontSize(e) {
@@ -173,11 +175,11 @@
   }
 
 
-    function ChangeFontStyle(e) {
-      console.log("CHANGE STYLE")
+  function ChangeFontStyle(e) {
+    console.log("CHANGE STYLE")
     var e = document.getElementById("styleChange");
     var value = e.value;
-      console.log(value)
+    console.log(value)
     var selectLi = document.querySelectorAll("li") 
     for (var i =0; i < selectLi.length; i++){
       if(value == "Arial"){
@@ -187,25 +189,27 @@
         selectLi[i].style.fontFamily = "Georgia, Helvetica, sans-serif";
       }
       if(value == "Lucida"){
-        selectLi[i].style.fontFamily = "Lucida Consol, Helvetica, monospace";
+        selectLi[i].style.fontFamily = "Lucida Console, monospace";
       } 
       if(value == "Default"){
-        selectLi[i].style.fontFamily = "Nunito Sans', sans-serif";
+        selectLi[i].style.fontFamily = "Nunito Sans, sans-serif";
       } 
     }
   }
-    function ChangeLetterSpacing(e) {
+
+  function ChangeLetterSpacing(e) {
     var e = document.getElementById("spacingChange");
     var value = e.value;
 
     var selectLi = document.querySelectorAll("li") 
     for (var i =0; i < selectLi.length; i++){
-        selectLi[i].style.letterSpacing= (value) + 'px';
+      selectLi[i].style.letterSpacing= (value) + 'px';
     }
+  }
 
-}
+</script>
 
-    </script>
+
   </head>
   <body>
     <nav class="navbar">
