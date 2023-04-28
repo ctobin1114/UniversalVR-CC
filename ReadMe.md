@@ -30,4 +30,4 @@ Note: Requires RealTek Audio drivers to be installed in a Windows machine. Progr
   flask run
 ```
 
-4. Open the frontend from the IP given by flask or with [http://localhost:3000/].
+4. Open the frontend from the IP given by flask or with <http://localhost:3000/>.
