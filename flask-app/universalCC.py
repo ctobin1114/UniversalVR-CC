@@ -1,41 +1,66 @@
-from threading import Lock
 from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
-from vosk import Model, KaldiRecognizer
-import pyaudio
+import json
 
-model = Model(r'model')
-recognizer = KaldiRecognizer(model,16000)
+from threading import Lock
+from threading import Thread
+from queue import Queue
+
+import speech_recognition as sr
+import pyaudio as pa
+
 app = Flask(__name__)
-
-
-cap = pyaudio.PyAudio()
-stream = cap.open(format=pyaudio.paInt16, channels = 1, rate = 16000, input=True,frames_per_buffer=8192)
-stream.start_stream()
 async_mode = None
 
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
-import json
 
 
 
-def background_thread():
-    cap = pyaudio.PyAudio()
-    stream = cap.open(format=pyaudio.paInt16, channels = 1, rate = 16000, input=True,frames_per_buffer=8192)
-    stream.start_stream()
+# Audio/Recognizer vars/objects
+p = pa.PyAudio()
+r = sr.Recognizer()
+audio_queue = Queue()
 
-    def check(data):
-        if recognizer.AcceptWaveform(data):
-            res = json.loads(recognizer.Result())['text']
-            socketio.emit('my_response',
-                      {'data': res})
-        
-    while True:
-        data = stream.read(10000)
-        check(data)
-            
+recognizer_on = True
+
+
+# Recognizer Thread
+def recognize_worker():
+    # this runs in a background thread
+    while recognizer_on or audio_queue.not_empty:
+        audio = audio_queue.get()  # retrieve the next audio processing job from the main thread
+        if audio is None: break  # stop processing if the main thread is done
+
+        # received audio data, now we'll recognize it using your choice of recogonizer (in this case VOSK)
+        res = json.loads(r.recognize_vosk(audio))['text']
+        socketio.emit('my_response',
+                    {'data': res})
+
+        audio_queue.task_done()  # mark the audio processing job as completed in the queue
+
+
+# Listener Thread
+def listen_worker(dev_index):
+    # this runs in a background thread
+    with sr.Microphone(device_index=dev_index) as source:
+        while recognizer_on:  # repeatedly listen for phrases and put the resulting audio on the audio processing job queue
+            audio_queue.put(r.listen(source, phrase_time_limit=3))
+
+    audio_queue.join()  # block until all current audio processing jobs are done
+    audio_queue.put(None)  # tell the recognize_thread to stop
+
+
+
+# Finds Stereo Mix device id by name
+for i in range(p.get_device_count()):
+    dev = p.get_device_info_by_index(i)
+    if (dev['name'] == 'Stereo Mix (Realtek(R) Audio)' and dev['hostApi'] == 0):
+        dev_index = dev['index']
+
+Thread(target=listen_worker, args=(dev_index,), daemon=True).start()
+Thread(target=recognize_worker, daemon=True).start()
 
 
 @app.route("/")
@@ -48,24 +73,6 @@ def my_event(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
          {'data': message['data'], 'count': session['receive_count']})
-
-@socketio.on('test_message')
-def handle_message(data):
-    print('received message: ' + str(data))
-    emit('test_response', {'data': 'Test response sent'})
-
-@socketio.on('broadcast_message')
-def handle_broadcast(data):
-    print('received: ' + str(data))
-    emit('broadcast_response', {'data': 'Broadcast sent'}, broadcast=True)
-
-@socketio.event
-def connect():
-    global thread
-    with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(background_thread)
-    # emit('my_response', {'data': 'Connected', 'count': 0})
 
 if __name__ == '__main__':
     socketio.run(app)
