@@ -31,10 +31,7 @@
     <script type="text/javascript" charset="utf-8">
       var bool = false
       function PlayOrPause() {
-        // no ';' here
-        console.log('Yeety')
         var button = document.getElementById('playorpause')
-        console.log(button.value)
         if (button.innerText == 'Play') {
           button.innerText = 'Pause'
           bool = true
@@ -45,46 +42,43 @@
       }
 
       $(document).ready(function() {
-        const BLUR_LEVELS = 4
-        const MAX_BLUR = 2
-        const VERSE_INTERVAL = 2000
+        
+        var transcription = document.getElementById('ul')
+        var transcriptionContainer = document.getElementById('log')
+        let oldTranscriptionIndex = null
+        setTranscription(0)
+        
 
-        var lyrics = document.getElementById('ul')
-        var lyricsWrapper = document.getElementById('log')
-        let currentVerseIdx = null
-
-        function scrollLyricsToVerse(verse) {
-          const scrollOffset = Math.floor(lyricsWrapper.clientHeight * 0.2)
-          const versePosition = verse.offsetTop - scrollOffset
-
-          lyricsWrapper.scrollTop = versePosition
-        }
-
-        function setVerse(verseIdx) {
-          console.log('setVerse activated')
-          const currentVerse = lyrics.children[currentVerseIdx]
-          const newVerse = lyrics.children[verseIdx]
-          if (currentVerse) {
-            console.log('here')
-            currentVerse.classList.remove('verseNew')
-            currentVerse.classList.add('verse')
+        function setTranscription(transcriptionIndex) {
+          const oldTranscription = transcription.children[oldTranscriptionIndex]
+          const newTranscription = transcription.children[transcriptionIndex]
+          if (oldTranscription) {
+            oldTranscription.classList.remove('transcriptionNew')
+            oldTranscription.classList.add('transcription')
           }
-          if (newVerse) {
-            scrollLyricsToVerse(newVerse)
+          if (newTranscription) {
+            scroll(newTranscription)
           }
 
-          currentVerseIdx = verseIdx
+          oldTranscriptionIndex = transcriptionIndex
         }
 
-        function incrementVerse(amount, data) {
-          const newVerseIdx = Math.max(
+        function nextTranscription(amount) {
+          const newTranscriptionIdx = Math.max(
             0,
-            (currentVerseIdx + amount) % lyrics.children.length
+            (oldTranscriptionIndex + amount) % transcription.children.length
           )
-          setVerse(newVerseIdx)
+          setTranscription(newTranscriptionIdx)
         }
 
-        setVerse(0)
+        function scroll(transcription) {
+          const scrollOffset = Math.floor(transcriptionContainer.clientHeight * 0.2)
+          const transcriptionPosition = transcription.offsetTop - scrollOffset
+
+          transcriptionContainer.scrollTop = transcriptionPosition
+        }
+
+        
 
         var socket = io()
 
@@ -99,7 +93,9 @@
 
             var spacing = document.getElementById("spacingChange");
             var vSpacing = spacing.value;
-            
+             
+            var style= document.getElementById("styleChange");
+            var vStyle= style.value;
             if(vFont == 20){
               li.style.fontSize = (20) + 'px';
             }
@@ -122,13 +118,27 @@
               li.style.letterSpacing = (6) + 'px';
             }
 
+
+            if(vStyle== "Arial"){
+        li.style.fontFamily = "Arial, Helvetica, sans-serif";
+      }
+      if(vStyle== "Georgia"){
+        li.style.fontFamily = "Georgia, Helvetica, sans-serif";
+      }
+      if(vStyle== "Lucida"){
+        li.style.fontFamily = "Lucida Consol, Helvetica, monospace";
+      } 
+      if(vStyle== "Default"){
+        li.style.fontFamily = "Nunito Sans', sans-serif";
+      } 
+
             var fontStyle = document.getElementById("fontChange");
             var vFontStyle = fontStyle.value;
             
             if(vFontStyle == 'Arial'){
-              li.style.fontStyle = 'Arial';
+              li.style.fontStyle = "Arial, Helvetica, sans-serif";
             }
-            if(vFontStyle == 'Fantasy'){
+            if(vFontStyle == 'Lucida'){
               li.style.fontStyle = 'Fantasy';
             }
             if(vFontStyle== 'Georgia'){
@@ -141,7 +151,7 @@
             li.setAttribute('id', 'text') // added line
             if (bool) {
               ul.appendChild(li)
-              incrementVerse(1, msg.data)
+              nextTranscription(1, msg.data)
             }
           }
           if (cb) cb()
@@ -155,7 +165,10 @@
 
     var selectLi = document.querySelectorAll("li") 
     for (var i =0; i < selectLi.length; i++){
+      console.log(selectLi[i].className)
+      if(selectLi[i].className != 'menu-item'){ 
         selectLi[i].style.fontSize= (value) + 'px';
+      }
     }
   }
 
@@ -167,10 +180,18 @@
       console.log(value)
     var selectLi = document.querySelectorAll("li") 
     for (var i =0; i < selectLi.length; i++){
-      if(value = "Arial"){
-        selectLi[i].style.font= "Arial, Helvetica, sans-serif";
+      if(value == "Arial"){
+        selectLi[i].style.fontFamily = "Arial, Helvetica, sans-serif";
       }
-        
+      if(value == "Georgia"){
+        selectLi[i].style.fontFamily = "Georgia, Helvetica, sans-serif";
+      }
+      if(value == "Lucida"){
+        selectLi[i].style.fontFamily = "Lucida Consol, Helvetica, monospace";
+      } 
+      if(value == "Default"){
+        selectLi[i].style.fontFamily = "Nunito Sans', sans-serif";
+      } 
     }
   }
     function ChangeLetterSpacing(e) {
@@ -187,21 +208,13 @@
     </script>
   </head>
   <body>
-    <!-- <button id="toggleButton"></button> -->
-    <!--aside bar-->
     <nav class="navbar">
       <div class="navbar-container">
-        <!--logo div-->
         <div class="navbar-logo-div">
-          <a class="navbar-logo-link" href="#">
-            <i class="fas fa-shield-dog"></i>
-          </a>
           <button class="navbar-toggler">
             <i class="fas fa-solid fa-bars"></i>
           </button>
         </div>
-
-        <!--item list-->
         <ul class="menu-list" class="dropdown">
           <li class="menu-item">
             <a class="menu-link" href="#">
@@ -215,15 +228,15 @@
               </select>
             </a>
           </li>
-          
           <li class="menu-item">
             <a class="menu-link" class="menu-link" href="#">
               <i class="fas fa-solid fa-user"></i>
               <select class="dev" id="styleChange" onchange = "ChangeFontStyle()">
                 <option selected disabled hidden>Font Style</option>
+                <option value="Default">Default</option>
                 <option value="Arial">Arial</option>
                 <option value="Georgia">Georgia</option>
-                <option value="Fantasy">Fantasy</option>
+                <option value="Lucida">Lucida</option>
 
               </select>
             </a>
@@ -259,7 +272,7 @@
       </label>
     </div>
     <div class="gitub">
-      <header>Vr Universal Captioning</header>
+      <header>VR Universal Captioning</header>
     </div>
 
     <div class="talk2">
@@ -272,22 +285,13 @@
       <div class="grid-item">
         <button
           id="playorpause"
-          class="dev"
+         class="playButton"
           value="Play"
           onclick="PlayOrPause()"
         >
           Play
         </button>
-        <select class="dev" name="Transcribe Speed" id="cars">
-          <option value="3">Normal</option>
-          <option value="6">Slow</option>
-          <option value="2">Fast</option>
-          <option value="1">Extremely Fast</option>
-        </select>
       </div>
-      <!-- <section class="grid-item">
-          <button class="lang">English is the primary langage</button>
-        </section> -->
     </div>
 
     <script>
