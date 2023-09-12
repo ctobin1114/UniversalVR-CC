@@ -7,7 +7,7 @@
 - [@BelaJatt, Frontend](https://github.com/BelaJatt)
 - [@chrisandrade15, Frontend/API](https://github.com/chrisandrade15)
 - [@Sean-OCallaghan, Frontend/Backend](https://github.com/Sean-OCallaghan)
-- [@TheBeerex, Backend](https://github.com/TheBeerex)
+- [@ctobin1114, Backend](https://github.com/ctobin1114)
 
 ## Features
 
